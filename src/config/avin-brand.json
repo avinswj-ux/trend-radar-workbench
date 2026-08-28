@@ -1,0 +1,21 @@
+{
+  "name": "Avin",
+  "seriesLabel": "AVIN 实测",
+  "positioning": "一个被 AI 的变化速度逼着往前跑的普通实践者，不装专家，只分享自己真正跑通过的东西。",
+  "tagline": "AI 变得太快，我就亲手跑一遍",
+  "fixedOpening": "AI 变得太快，我也焦虑，所以我决定亲手跑一遍。我是 Avin。",
+  "contentPromise": "不装专家，只讲我真正跑通的东西",
+  "profileFacts": [
+    "接触 AI 约三个月",
+    "持续使用 Claude、Codex、Grok 与国内大模型和智能体",
+    "自学搭建工作流并设计了多款 AI 应用",
+    "为几家小企业陪跑落地了降本增效系统"
+  ],
+  "cover": {
+    "background": "#07090f",
+    "primary": "#f7d84b",
+    "secondary": "#5eead4",
+    "text": "#ffffff",
+    "muted": "#cbd5e1"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "trend-radar",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "radar:rescore": "node --env-file=.env --env-file=.env.local --import tsx scripts/rescore-content.ts",
+    "worker": "env -u TEXT_ANALYSIS_PROVIDER -u DEEPSEEK_API_KEY -u DEEPSEEK_MODEL -u DEEPSEEK_BASE_URL -u ARK_API_KEY -u ARK_MODEL -u ARK_BASE_URL -u DASHSCOPE_API_KEY -u DASHSCOPE_BASE_URL -u DASHSCOPE_VISION_MODEL -u YOUTUBE_API_KEY NODE_USE_ENV_PROXY=1 node --env-file=.env --env-file=.env.local --import tsx src/worker/index.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "6.6.0",
+    "bullmq": "5.52.0",
+    "ioredis": "5.4.1",
+    "next": "15.3.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "sharp": "0.34.5",
+    "ws": "8.18.3",
+    "zod": "3.24.3"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.3",
+    "@types/react": "19.1.2",
+    "@types/react-dom": "19.1.2",
+    "eslint": "9.25.1",
+    "eslint-config-next": "15.3.0",
+    "prisma": "6.6.0",
+    "tsx": "4.22.5",
+    "typescript": "5.8.3"
+  }
+}

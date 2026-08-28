@@ -1,0 +1,293 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SourceType {
+  RSS
+  GITHUB
+  HUGGING_FACE
+  PRODUCT_HUNT
+  WEB
+  X_BOOKMARK
+  YOUTUBE
+}
+
+enum RunStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+enum ContentCategory {
+  AI_FEATURE
+  OPEN_SOURCE
+  AGENT
+  SKILL
+  MODEL
+  TOOL
+}
+
+enum CandidateStatus {
+  PENDING
+  SELECTED
+  DISMISSED
+}
+
+enum ContentPlatform {
+  XIAOHONGSHU
+  DOUYIN
+}
+
+enum AssetRights {
+  OWNED
+  PERMISSION_GRANTED
+  CC_BY
+  RESEARCH_ONLY
+}
+
+enum MediaAssetStatus {
+  QUEUED
+  DOWNLOADING
+  READY_FOR_ANALYSIS
+  ANALYZING
+  ANALYZED
+  FAILED
+}
+
+enum PublishReviewStatus {
+  PASSED
+  NEEDS_CHANGES
+  DO_NOT_PUBLISH
+}
+
+enum VideoRenderStatus {
+  QUEUED
+  RENDERING
+  SUCCEEDED
+  FAILED
+}
+
+model Source {
+  id        String    @id @default(cuid())
+  name      String
+  type      SourceType
+  config    Json
+  enabled   Boolean   @default(true)
+  schedule  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  runs      CrawlRun[]
+  items     ContentItem[]
+}
+
+model CrawlRun {
+  id         String    @id @default(cuid())
+  sourceId   String
+  status     RunStatus @default(QUEUED)
+  startedAt  DateTime?
+  finishedAt DateTime?
+  stats      Json?
+  error      String?
+  source     Source    @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  rawItems   RawItem[]
+
+  @@index([sourceId, status])
+}
+
+model RawItem {
+  id          String   @id @default(cuid())
+  crawlRunId  String
+  externalId  String?
+  payload     Json
+  fetchedAt   DateTime @default(now())
+  crawlRun    CrawlRun @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
+  contentItem ContentItem?
+
+  @@index([externalId])
+}
+
+model ContentItem {
+  id           String          @id @default(cuid())
+  sourceId     String
+  rawItemId    String?         @unique
+  canonicalUrl String          @unique
+  title        String
+  body         String?
+  author       String?
+  publishedAt  DateTime?
+  language     String?
+  mediaLicense String?
+  category     ContentCategory?
+  topicTheme   String?
+  fingerprint  String?
+  createdAt    DateTime        @default(now())
+  source       Source          @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  rawItem      RawItem?        @relation(fields: [rawItemId], references: [id])
+  analysis     AiAnalysis?
+  score        TrendScore?
+  candidates   DailyCandidate[]
+  drafts       ContentDraft[]
+  mediaAssets  MediaAsset[]
+  youtubeMatches TopicVideoMatch[]
+
+  @@index([sourceId, publishedAt])
+  @@index([fingerprint])
+}
+
+model TopicVideoMatch {
+  id             String      @id @default(cuid())
+  contentItemId  String
+  youtubeVideoId String
+  url            String
+  title          String
+  channel        String?
+  thumbnailUrl   String?
+  publishedAt    DateTime?
+  viewCount      BigInt      @default(0)
+  likeCount      BigInt      @default(0)
+  duration       String?
+  matchScore     Int         @default(0)
+  createdAt      DateTime    @default(now())
+  contentItem    ContentItem @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+
+  @@unique([contentItemId, youtubeVideoId])
+  @@index([contentItemId, matchScore])
+}
+
+model MediaAsset {
+  id            String           @id @default(cuid())
+  contentItemId String
+  sourceUrl     String
+  rights        AssetRights
+  status        MediaAssetStatus @default(QUEUED)
+  localDir      String?
+  videoPath     String?
+  audioPath     String?
+  subtitlePath  String?
+  metadata      Json?
+  transcript    String?
+  shotList      Json?
+  error         String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  contentItem   ContentItem      @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+
+  @@index([contentItemId, status])
+}
+
+model ContentDraft {
+  id            String          @id @default(cuid())
+  contentItemId String
+  platform      ContentPlatform
+  model         String
+  title         String
+  hook          String
+  script        String
+  caption       String
+  hashtags      Json
+  storyboard    Json
+  bgmSourceUrl  String?
+  bgmReference  Json?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  contentItem   ContentItem     @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+  narrationClips NarrationClip[]
+  publishReview PublishReview?
+  videoRender   VideoRender?
+
+  @@unique([contentItemId, platform])
+  @@index([platform, updatedAt])
+}
+
+model VideoRender {
+  id        String            @id @default(cuid())
+  draftId   String            @unique
+  status    VideoRenderStatus @default(QUEUED)
+  progress  Int               @default(0)
+  outputUrl String?
+  visualMode String?
+  error     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  draft     ContentDraft      @relation(fields: [draftId], references: [id], onDelete: Cascade)
+
+  @@index([status, updatedAt])
+}
+
+model PublishReview {
+  id         String              @id @default(cuid())
+  draftId    String              @unique
+  status     PublishReviewStatus
+  model      String
+  commercial Boolean             @default(false)
+  industry   String              @default("general")
+  report     Json
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  draft      ContentDraft        @relation(fields: [draftId], references: [id], onDelete: Cascade)
+
+  @@index([status, updatedAt])
+}
+
+model NarrationClip {
+  id        String       @id @default(cuid())
+  draftId   String
+  scene     Int
+  text      String
+  voice     String
+  audioUrl  String
+  createdAt DateTime     @default(now())
+  draft     ContentDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+
+  @@unique([draftId, scene])
+}
+
+model AiAnalysis {
+  id            String   @id @default(cuid())
+  contentItemId String   @unique
+  model         String
+  summary       String
+  tags          Json
+  entities      Json
+  chineseAngle  String?
+  riskFlags     Json
+  createdAt     DateTime @default(now())
+  contentItem   ContentItem @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+}
+
+model TrendScore {
+  id            String   @id @default(cuid())
+  contentItemId String   @unique
+  total         Int
+  novelty       Int
+  utility       Int
+  momentum      Int
+  shareability  Int
+  confidence    Int
+  videoSuitability Int @default(50)
+  reasoning     String
+  createdAt     DateTime @default(now())
+  contentItem   ContentItem @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+
+  @@index([total])
+}
+
+model DailyCandidate {
+  id            String          @id @default(cuid())
+  date          DateTime        @db.Date
+  contentItemId String
+  rank          Int
+  status        CandidateStatus @default(PENDING)
+  editorNote    String?
+  createdAt     DateTime        @default(now())
+  contentItem   ContentItem     @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+
+  @@unique([date, contentItemId])
+  @@index([date, status, rank])
+}

@@ -1,0 +1,18 @@
+node_modules/
+.next/
+.env
+.env.*
+!.env.example
+dist/
+coverage/
+*.tsbuildinfo
+.DS_Store
+
+# Runtime databases, queues, downloaded sources, render intermediates and exports.
+storage/
+public/generated/
+production/
+
+# Local logs and temporary media fragments.
+*.log
+*.part
