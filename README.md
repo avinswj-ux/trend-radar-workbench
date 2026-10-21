@@ -128,4 +128,6 @@ Issues and PRs are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-[MIT](LICENSE) © 2026 avinswj-ux. Third-party code in `vendor/` retains its own license.
+[MIT](LICENSE) © 2026 avinswj-ux.
+
+Third-party code: files under `vendor/yuwen-publish-precheck/` are © yuwen-cool under their own MIT license (see [vendor/yuwen-publish-precheck/LICENSE](vendor/yuwen-publish-precheck/LICENSE)). / `vendor/` 下的第三方代码保留其原有 MIT 许可证。
