@@ -16,3 +16,5 @@ production/
 # Local logs and temporary media fragments.
 *.log
 *.part
+package-lock.json
+yarn.lock

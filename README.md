@@ -36,7 +36,7 @@ Next.js 15 (App Router) · React 19 · TypeScript · Prisma 6 + PostgreSQL 16 ·
 ```bash
 git clone https://github.com/avinswj-ux/trend-radar-workbench.git
 cd trend-radar-workbench
-pnpm install          # 推荐 pnpm（package-lock.json 目前与 npm ci 不兼容）
+pnpm install                  # 项目统一使用 pnpm
 cp .env.example .env          # 按需填写密钥；不填则使用规则分析
 touch .env.local              # worker 脚本会读取该文件，可为空
 docker compose up -d          # Postgres :5434, Redis :6381

@@ -28,3 +28,8 @@ Only `.env.example` with empty placeholders belongs in the repo.
 ## License
 
 By contributing you agree your contributions are licensed under the MIT License.
+
+## Package manager / 包管理器
+
+This project uses **pnpm** (`pnpm-lock.yaml` is the single source of truth). Please don't commit `package-lock.json` or `yarn.lock`.
+本项目统一使用 pnpm，请勿提交 package-lock.json / yarn.lock。
