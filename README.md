@@ -1,5 +1,7 @@
 # Trend Radar Workbench
 
+[![CI](https://github.com/avinswj-ux/trend-radar-workbench/actions/workflows/ci.yml/badge.svg)](https://github.com/avinswj-ux/trend-radar-workbench/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **AI 趋势雷达 + 内容生产工作台 · AI trend radar and content production workbench**
 
 [中文](#中文) | [English](#english)
@@ -42,6 +44,7 @@ touch .env.local              # worker 脚本会读取该文件，可为空
 docker compose up -d          # Postgres :5434, Redis :6381
 npm run db:generate && npm run db:migrate
 npm run dev                   # http://localhost:3000
+pnpm test                     # 单元测试 / unit tests
 npm run worker                # 另开终端
 ```
 
@@ -71,7 +74,7 @@ npm run worker                # 另开终端
 
 ### 路线图
 
-- [ ] 自动化测试与 CI（GitHub Actions）
+- [x] 单元测试（Vitest）与 CI（GitHub Actions）
 - [ ] Product Hunt / 通用网页信息源（枚举已预留）
 - [ ] 将品牌 / 形象配置（Avin）抽象为可替换配置
 - [ ] 一键 Docker 部署（应用 + Worker）
@@ -116,7 +119,7 @@ All settings live in [`.env.example`](.env.example) (placeholders only). Without
 
 ### Roadmap
 
-- [ ] Automated tests and CI (GitHub Actions)
+- [x] Unit tests (Vitest) and CI (GitHub Actions)
 - [ ] Product Hunt / generic web sources (enum values already reserved)
 - [ ] Make the brand/persona config (Avin) pluggable
 - [ ] One-command Docker deployment (app + worker)
